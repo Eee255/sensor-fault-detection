@@ -12,3 +12,4 @@ wheels/
 logs/
 
 demo_logging.py
+demo_exception.py

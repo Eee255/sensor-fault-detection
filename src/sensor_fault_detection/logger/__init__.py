@@ -19,4 +19,8 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE_PATH = LOG_DIR / LOG_FILE_NAME
 
 # 4. configure logging to write to that file  
-logging.basicConfig(filename=str(LOG_FILE_PATH), format="%(asctime)s - %(lineno)d - %(levelname)s - %(message)s", level=logging.INFO)
+logging.basicConfig(
+    filename=str(LOG_FILE_PATH), 
+    format="%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(message)s", 
+    level=logging.INFO
+    )
