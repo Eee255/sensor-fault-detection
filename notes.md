@@ -1,0 +1,1 @@
+about logging in template.py
