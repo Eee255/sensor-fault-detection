@@ -13,3 +13,5 @@ logs/
 
 demo_logging.py
 demo_exception.py
+data
+demo_mongo.py

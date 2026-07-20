@@ -7,7 +7,11 @@ authors = [
     { name = "Bhanu prakash", email = "sigebhanuprakash171@gmail.com" }
 ]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "certifi>=2026.6.17",
+    "pandas>=3.0.3",
+    "pymongo[srv]>=4.17.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.11.14,<0.12.0"]
