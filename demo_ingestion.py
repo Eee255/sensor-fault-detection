@@ -12,3 +12,9 @@ try:
     print(artifact)
 except Exception as e:
     raise SensorException(e, sys)
+
+
+
+'''
+DataIngestionArtifact(trained_file_path='artifacts\\07_21_2026_22_29_39\\data_ingestion\\ingested\\train.csv', test_file_path='artifacts\\07_21_2026_22_29_39\\data_ingestion\\ingested\\test.csv')
+'''
