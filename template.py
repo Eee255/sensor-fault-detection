@@ -19,6 +19,7 @@ list_of_files = [
     "src/sensor_fault_detection/utils/__init__.py",
     "src/sensor_fault_detection/logger/__init__.py",
     "src/sensor_fault_detection/exception/__init__.py",
+    "src/sensor_fault_detection/constants/__init__.py",
     "tests/__init__.py",
     ".github/workflows/ci.yaml",
 ]

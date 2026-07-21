@@ -25,6 +25,9 @@ try:
     client = MongoClient(mongo_url, tlsCAFile=certifi.where())
     collection = client[DATABASE_NAME][COLLECTION_NAME]
 
+    collection.delete_many({})
+    logging.info("Existing documents deleted from collection.")
+
     BATCH_SIZE = 5000
     total_inserted = 0
     for start in range(0, len(records), BATCH_SIZE):

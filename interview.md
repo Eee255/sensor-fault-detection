@@ -31,3 +31,14 @@ One-liner if they just want a quick check
 "It marks a directory as a Python package so it can be imported like a module."
 
 --------------------------------------------------
+
+
+"I made a folder called entity with two files, to keep my pipeline organized.
+
+The first file, config_entity.py, holds the settings — basically, where each step should save its files, before that step even runs. Like a plan.
+
+The second file, artifact_entity.py, holds the results — the actual file paths after a step finishes running. Like a receipt.
+
+The reason I split it this way: every time my pipeline runs, I create one timestamp at the very start, and every file path for that run is built using that same timestamp. So all the files from one run stay together in one folder, and never get mixed up with files from a different run.
+
+Then each step in my pipeline follows the same pattern — it takes a config (its settings) as input, and gives back an artifact (its result) as output. That way, the next step doesn't need to know how the previous step worked internally — it just needs the artifact, the result, to continue."
