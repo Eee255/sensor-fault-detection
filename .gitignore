@@ -18,3 +18,5 @@ demo_mongo.py
 interview.md
 notes.md
 artifacts/
+drifted_test.csv
+broken_train.csv

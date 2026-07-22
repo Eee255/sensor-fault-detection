@@ -43,6 +43,7 @@ class DataValidation:
         try:
             report = {}
             drift_found = False
+            threshold = 0.05 / len(base_df.columns) 
 
             for column in base_df.columns:
                 d1 = base_df[column].dropna()
@@ -52,13 +53,13 @@ class DataValidation:
                     # not enough real data to compare — be HONEST about it
                     report[column] = {
                         "p_value": None,
-                        "drift_detected": None,   # <-- None, not False. "unknown" not "safe"
+                        "drift_detected": None,   
                         "note": "insufficient non-null data to run KS test"
                     }
                     continue
 
                 result = ks_2samp(d1, d2)
-                is_drift = bool(result.pvalue < 0.05)
+                is_drift = bool(result.pvalue < threshold)
 
                 if is_drift:
                     drift_found = True
@@ -83,31 +84,38 @@ class DataValidation:
             train_df = pd.read_csv(self.data_ingestion_artifact.trained_file_path)
             test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
 
-            # --- schema check ---
+            # ---- SCHEMA CHECK: hard gate ----
             status = self.validate_number_of_columns(train_df)
-            if not status:
-                logging.info("Train dataframe does not match schema.")
             status_test = self.validate_number_of_columns(test_df)
-            if not status_test:
-                logging.info("Test dataframe does not match schema.")
-
             validation_status = status and status_test
 
-            # --- decide where to save based on schema pass/fail ---
-            if validation_status:
-                dir_path = os.path.dirname(self.data_validation_config.valid_train_file_path)
-                os.makedirs(dir_path, exist_ok=True)
-                train_df.to_csv(self.data_validation_config.valid_train_file_path, index=False, header=True)
-                test_df.to_csv(self.data_validation_config.valid_test_file_path, index=False, header=True)
-            else:
+            if not validation_status:
+                # save the rejected files first, so there's a paper trail
                 dir_path = os.path.dirname(self.data_validation_config.invalid_train_file_path)
                 os.makedirs(dir_path, exist_ok=True)
                 train_df.to_csv(self.data_validation_config.invalid_train_file_path, index=False, header=True)
                 test_df.to_csv(self.data_validation_config.invalid_test_file_path, index=False, header=True)
 
-            # --- drift check only makes sense if schema passed ---
-            if validation_status:
-                self.detect_dataset_drift(train_df, test_df)
+                raise Exception(
+                    f"Data validation failed — schema mismatch. "
+                    f"Rejected data saved at {self.data_validation_config.invalid_data_dir}"
+                )
+
+            # ---- only reaches here if schema check PASSED ----
+            dir_path = os.path.dirname(self.data_validation_config.valid_train_file_path)
+            os.makedirs(dir_path, exist_ok=True)
+            train_df.to_csv(self.data_validation_config.valid_train_file_path, index=False, header=True)
+            test_df.to_csv(self.data_validation_config.valid_test_file_path, index=False, header=True)
+
+            # ---- DRIFT CHECK: soft warning, does NOT stop the pipeline ----
+            drift_status = self.detect_dataset_drift(train_df, test_df)
+
+            if drift_status:
+                logging.warning(
+                    f"Data drift detected. See report at {self.data_validation_config.drift_report_file_path}"
+                )
+            else:
+                logging.info("No data drift detected.")
 
             data_validation_artifact = DataValidationArtifact(
                 validation_status=validation_status,
@@ -116,7 +124,9 @@ class DataValidation:
                 invalid_train_file_path=self.data_validation_config.invalid_train_file_path,
                 invalid_test_file_path=self.data_validation_config.invalid_test_file_path,
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
+                drift_status=drift_status,
             )
             return data_validation_artifact
+
         except Exception as e:
             raise SensorException(e, sys)
