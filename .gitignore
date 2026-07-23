@@ -20,3 +20,5 @@ notes.md
 artifacts/
 drifted_test.csv
 broken_train.csv
+demo_transformation.py
+vs_code_commands.txt
