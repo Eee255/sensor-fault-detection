@@ -10,15 +10,11 @@ wheels/
 .venv
 
 logs/
-
-demo_logging.py
-demo_exception.py
+notes/
 data
-demo_mongo.py
 interview.md
 notes.md
 artifacts/
 drifted_test.csv
 broken_train.csv
-demo_transformation.py
 vs_code_commands.txt
